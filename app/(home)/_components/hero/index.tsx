@@ -1,9 +1,27 @@
-import Image from "next/image";
+import Slider from "@/components/slider";
 import React from "react";
 
+const imageClassName = "object-contain w-full h-full rounded-xl";
+
 const Hero = () => {
+  const items = [
+    {
+      component: (
+        <div className="w-[680px] h-[480px] flex items-center justify-center overflow-hidden rounded-xl">
+          <img src="/hero.png" alt="hero" className={imageClassName} />
+        </div>
+      ),
+    },
+    {
+      component: (
+        <div className="w-[780px] h-[520px] flex items-center justify-center overflow-hidden rounded-xl">
+          <img src="/hero1.png" alt="hero" className={imageClassName} />
+        </div>
+      ),
+    },
+  ];
   return (
-    <div className="main-container mx-auto mt-[48px]">
+    <div className="main-container mx-auto mt-[12px]">
       <div className="w-full h-full flex items-center justify-between">
         <div className="flex flex-col gap-4 flex-1">
           <div className="logo-gold-pressed text-[18px] border-b-2 border-gold tracking-[6px] py-[8px] my-8 w-fit font-semibold ml-4">Master Confectionars</div>
@@ -18,8 +36,8 @@ const Hero = () => {
             </p>
           </div>
         </div>
-        <div className="flex-1 justify-self-end mt-8">
-          <Image src="/hero.png" alt="hero" width={800} height={800} className="object-cover justify-self-end rounded-xl" />
+        <div className="flex-1 justify-self-end flex items-center justify-center mt-8">
+          <Slider items={items} />
         </div>
       </div>
     </div>
