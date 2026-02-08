@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Almendra+SC&family=Cinzel+Decorative:wght@400;700;900&family=Libertinus+Mono&family=Libertinus+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Niconne&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -5,10 +6,19 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --background-image-red-gold-gradient: radial-gradient(ellipse at center, rgba(255, 120, 90, 0.18) 0%, rgba(255, 120, 90, 0.07) 38%, rgba(0, 0, 0, 0) 62%),
+    radial-gradient(ellipse at center, #b12a24 0%, #8f2322 42%, #6f181a 72%, #4f0d10 100%), radial-gradient(ellipse at top, rgba(255, 220, 180, 0.14) 0%, rgba(0, 0, 0, 0) 55%);
+  --background-image-gold-foil: var(--gold-foil);
+  --color-gold: var(--gold);
+  --color-gold-primary: var(--gold);
+  --color-beige: #d6c4a8;
+  --color-gold-secondary: #f5daa7;
+  --color-navy: #3b9797;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Roboto", system-ui, sans-serif;
+  --font-serif: "Libertinus Serif", serif;
+  --font-mono: "Libertinus Mono", ui-monospace, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -55,7 +65,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: #bf953f;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -80,6 +90,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --gold-foil: linear-gradient(135deg, #bf953f 0%, #d4ab32 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #fbf5b7 100%);
+  --gold: #bf953f;
 }
 
 .dark {
@@ -117,10 +129,83 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  html {
+    @apply font-sans;
+    letter-spacing: 2px;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+}
+
+.main-background {
+  background: radial-gradient(circle at center, #e9cd9b 0%, #e9cd9b 6%, #b3221b 18%, #7d2021 45%, #781814 100%) !important;
+}
+
+.main-container {
+  @apply max-w-[1440px];
+}
+
+.logo-gold-pressed {
+  background: var(--gold-foil);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.15)) drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.8));
+}
+
+.cinzel-decorative-regular {
+  font-family: "Cinzel Decorative", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.cinzel-decorative-bold {
+  font-family: "Cinzel Decorative", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.cinzel-decorative-black {
+  font-family: "Cinzel Decorative", serif;
+  font-weight: 900;
+  font-style: normal;
+}
+.niconne-regular {
+  font-family: "Niconne", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.libertinus-serif-regular {
+  font-family: "Libertinus Serif", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.libertinus-serif-semibold {
+  font-family: "Libertinus Serif", serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.libertinus-serif-bold {
+  font-family: "Libertinus Serif", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.libertinus-serif-regular-italic {
+  font-family: "Libertinus Serif", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.libertinus-serif-semibold-italic {
+  font-family: "Libertinus Serif", serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.libertinus-serif-bold-italic {
+  font-family: "Libertinus Serif", serif;
+  font-weight: 700;
+  font-style: italic;
 }
