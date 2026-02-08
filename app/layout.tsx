@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased bg-red-gold-gradient min-w-screen min-h-screen`}>
+      <body className={`antialiased overflow-x-hidden bg-red-gold-gradient min-w-screen min-h-screen`}>
         <Toaster />
         <Header />
         {children}

@@ -7,21 +7,28 @@ const Hero = () => {
   const items = [
     {
       component: (
-        <div className="w-[680px] h-[480px] flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="w-[680px] h-[580px] flex items-center justify-center overflow-hidden rounded-xl">
+          <img src="/hero4.png" alt="hero" className={imageClassName} />
+        </div>
+      ),
+    },
+    {
+      component: (
+        <div className="w-[680px] h-[480px] mt-[50px] flex items-center justify-center overflow-hidden rounded-xl">
           <img src="/hero.png" alt="hero" className={imageClassName} />
         </div>
       ),
     },
     {
       component: (
-        <div className="w-[780px] h-[520px] flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="w-[780px] h-[520px] mt-[10px] flex items-center justify-center overflow-hidden rounded-xl">
           <img src="/hero1.png" alt="hero" className={imageClassName} />
         </div>
       ),
     },
   ];
   return (
-    <div className="main-container mx-auto mt-[12px]">
+    <div className="main-container mx-auto mt-[12px] overflow-hidden">
       <div className="w-full h-full flex items-center justify-between">
         <div className="flex flex-col gap-4 flex-1">
           <div className="logo-gold-pressed text-[18px] border-b-2 border-gold tracking-[6px] py-[8px] my-8 w-fit font-semibold ml-4">Master Confectionars</div>
