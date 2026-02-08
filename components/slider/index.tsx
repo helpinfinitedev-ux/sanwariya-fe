@@ -22,7 +22,7 @@ const Slider = ({ items }: SliderProps) => {
         centeredSlides={true}
         grabCursor={true}
         autoplay={{
-          delay: 1000,
+          delay: 3000,
           disableOnInteraction: false,
         }}
         speed={1000}
