@@ -35,7 +35,7 @@ const Header = () => {
             <Image src="/logo2.png" alt="logo" width={200} height={120} className="object-cover" />
           </div>
         </div>
-        <div className="flex items-center gap-10 text-[#fdd17b] text-xl">
+        <div className="flex items-center font-medium gap-10 text-gold-bright text-xl">
           {navLinks.map((link) => (
             <Link href={link.href} key={link.id}>
               {link.label}
@@ -45,6 +45,7 @@ const Header = () => {
         <div className="flex items-center gap-8">
           <Icon icon="uil:cart" width="24" height="24" className="text-[#fdd17b] mb-[1px] cursor-pointer" />
           <Icon icon="mingcute:search-line" width="24" height="24" className="text-[#fdd17b] cursor-pointer" />
+          <Button>Login</Button>
         </div>
       </div>
     </header>

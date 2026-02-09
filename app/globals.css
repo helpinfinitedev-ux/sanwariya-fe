@@ -13,7 +13,9 @@
   --color-gold-primary: var(--gold);
   --color-beige: #d6c4a8;
   --color-gold-secondary: #f5daa7;
+  --color-gold-bright: #f8ca6f;
   --color-navy: #1a3263;
+  --color-maroon: #691617;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: "Roboto", system-ui, sans-serif;

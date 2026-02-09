@@ -1,4 +1,5 @@
 import Slider from "@/components/slider";
+import { Button } from "@/components/ui/button";
 import React from "react";
 
 const imageClassName = "object-contain w-full h-full rounded-xl";
@@ -41,6 +42,9 @@ const Hero = () => {
             <p className="text-xl text-[#F5DAA7] font-semibold py-8 tracking-[2px] leading-[32px]">
               Experience the zenith of Indian heritage sweets. Each piece is a masterpiece of gold-pressed elegance and authentic flavor
             </p>
+          </div>
+          <div>
+            <Button className="text-xl text-navy font-semibold p-6 -mt-6 px-10">Buy Now</Button>
           </div>
         </div>
         <div className="flex-1 justify-self-end flex items-center justify-center mt-8">
