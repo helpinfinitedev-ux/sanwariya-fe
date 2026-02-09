@@ -13,7 +13,7 @@
   --color-gold-primary: var(--gold);
   --color-beige: #d6c4a8;
   --color-gold-secondary: #f5daa7;
-  --color-navy: #3b9797;
+  --color-navy: #1a3263;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: "Roboto", system-ui, sans-serif;
@@ -140,7 +140,7 @@
 }
 
 .main-container {
-  @apply max-w-[1440px];
+  @apply max-w-[1440px] px-4 py-4;
 }
 
 .logo-gold-pressed {
@@ -208,4 +208,23 @@
   font-family: "Libertinus Serif", serif;
   font-weight: 700;
   font-style: italic;
+}
+
+.gold-foil-btn {
+  background: var(--gold-foil);
+  background-size: 200% 200%;
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.8), inset 0 -2px 3px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(191, 149, 63, 0.5), 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(170, 119, 28, 0.4);
+  overflow: hidden;
+}
+.gold-foil-btn:hover {
+  background-position: right center;
+  transform: translatey(-3px);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8), inset 0 -1px 2px rgba(0, 0, 0, 0.2), 0 20px 30px -10px rgba(191, 149, 63, 0.7);
+}
+
+.glass-card-gold {
+  @apply bg-white/80 backdrop-blur-md border-[2px] border-solid border-gold shadow-xl;
 }
