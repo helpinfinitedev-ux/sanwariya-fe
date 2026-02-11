@@ -45,7 +45,9 @@ const Header = () => {
         <div className="flex items-center gap-8">
           <Icon icon="uil:cart" width="24" height="24" className="text-[#fdd17b] mb-[1px] cursor-pointer" />
           <Icon icon="mingcute:search-line" width="24" height="24" className="text-[#fdd17b] cursor-pointer" />
-          <Button>Login</Button>
+          <Link href="/login">
+            <Button>Login</Button>
+          </Link>
         </div>
       </div>
     </header>

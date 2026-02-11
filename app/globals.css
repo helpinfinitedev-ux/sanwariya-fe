@@ -230,3 +230,32 @@
 .glass-card-gold {
   @apply bg-white/80 backdrop-blur-md border-[2px] border-solid border-gold shadow-xl;
 }
+
+/* Auth pages */
+.auth-background {
+  background: radial-gradient(
+      ellipse at top right,
+      rgba(105, 22, 23, 0.15) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom left,
+      rgba(191, 149, 63, 0.05) 0%,
+      transparent 50%
+    ),
+    #0c0404;
+}
+
+.auth-image-overlay {
+  background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.65) 0%,
+      rgba(0, 0, 0, 0.3) 60%,
+      rgba(0, 0, 0, 0.15) 100%
+    ),
+    linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%);
+}
+
+.auth-input {
+  @apply w-full h-12 pl-11 pr-4 bg-white/[0.04] border border-white/[0.08] rounded-lg text-beige placeholder:text-beige/25 focus:outline-none focus:border-gold/30 transition-colors text-sm;
+}
