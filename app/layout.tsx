@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { Providers } from "@/components/providers";
+import BaseLayout from "@/layout";
 
 export const metadata: Metadata = {
   title: "Sanwariya - Legacy of Exquisite Taste",
@@ -14,9 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased overflow-x-hidden min-w-screen min-h-screen">
-        <Toaster />
-        {children}
+      <body className="antialiased bg-red-gold-gradient overflow-x-hidden min-w-screen min-h-screen">
+        <Providers>
+          <Toaster />
+          <BaseLayout>{children}</BaseLayout>
+        </Providers>
       </body>
     </html>
   );

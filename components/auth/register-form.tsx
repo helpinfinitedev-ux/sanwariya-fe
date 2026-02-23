@@ -9,6 +9,7 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "../ui/input";
 
 const registerSchema = z
   .object({
@@ -59,8 +60,8 @@ const RegisterForm = () => {
                 <FormLabel className="text-gold-secondary/80 text-md uppercase tracking-[3px] font-sans font-medium">Full Name</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Icon icon="solar:user-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} />
-                    <input {...field} placeholder="Maharaja Singh" className="auth-input" />
+                    {/* <Icon icon="solar:user-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} /> */}
+                    <Input {...field} placeholder="Maharaja Singh" className="text-white" />
                   </div>
                 </FormControl>
                 <FormMessage className="text-red-400 text-xs" />
@@ -77,8 +78,8 @@ const RegisterForm = () => {
                 <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">Email Address</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Icon icon="solar:letter-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} />
-                    <input {...field} type="email" placeholder="royal@sanwariya.com" className="auth-input" />
+                    {/* <Icon icon="solar:letter-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} /> */}
+                    <Input {...field} type="email" placeholder="royal@sanwariya.com" className="text-white" />
                   </div>
                 </FormControl>
                 <FormMessage className="text-red-400 text-xs" />
@@ -96,8 +97,8 @@ const RegisterForm = () => {
                   <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Icon icon="solar:lock-keyhole-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} />
-                      <input {...field} type="password" placeholder="••••••••" className="auth-input" />
+                      {/* <Icon icon="solar:lock-keyhole-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} /> */}
+                      <Input {...field} type="password" placeholder="••••••••" className="text-white" />
                     </div>
                   </FormControl>
                   <FormMessage className="text-red-400 text-xs" />
@@ -113,8 +114,8 @@ const RegisterForm = () => {
                   <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">Confirm</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Icon icon="solar:shield-check-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} />
-                      <input {...field} type="password" placeholder="••••••••" className="auth-input" />
+                      {/* <Icon icon="solar:shield-check-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} /> */}
+                      <Input {...field} type="password" placeholder="••••••••" className="text-white" />
                     </div>
                   </FormControl>
                   <FormMessage className="text-red-400 text-xs" />
