@@ -1,19 +1,14 @@
 import { Button } from "@/components/ui/button";
-
-const categories = [
-  { id: "all", label: "All Delicacies" },
-  { id: "gulab-jamun", label: "Gulab Jamun" },
-  { id: "ladoo", label: "Ladoo" },
-  { id: "barfi", label: "Barfi" },
-  { id: "dry-fruit", label: "Dry Fruit Special" },
-];
+import type { Category } from "@/services/collection/index.service";
 
 interface CategoryFiltersProps {
+  categories: Category[];
   activeCategory: string;
   onCategoryChange: (categoryId: string) => void;
 }
 
 const CategoryFilters = ({
+  categories,
   activeCategory,
   onCategoryChange,
 }: CategoryFiltersProps) => {

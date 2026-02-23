@@ -1,3 +1,5 @@
+import http from "../http/index.service";
+
 export interface Product {
   id: number;
   name: string;
@@ -9,6 +11,11 @@ export interface Product {
   badge: string | null;
   badgeClass: string;
   category: string;
+}
+
+export interface Category {
+  id: string;
+  label: string;
 }
 
 const mockProducts: Product[] = [
@@ -170,26 +177,168 @@ const mockProducts: Product[] = [
   },
 ];
 
+const mockCategories: Category[] = [
+  { id: "gulab-jamun", label: "Gulab Jamun" },
+  { id: "ladoo", label: "Ladoo" },
+  { id: "barfi", label: "Barfi" },
+  { id: "dry-fruit", label: "Dry Fruit Special" },
+];
+
 const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const readData = (payload: unknown): unknown => {
+  if (!isRecord(payload)) return payload;
+  if ("data" in payload) return payload.data;
+  return payload;
+};
+
+const readArray = (payload: unknown): unknown[] => {
+  const data = readData(payload);
+  return Array.isArray(data) ? data : [];
+};
+
+const toSlug = (value: string): string =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-");
+
+const readCategoryId = (rawCategory: unknown): string => {
+  if (typeof rawCategory === "string") {
+    return rawCategory;
+  }
+
+  if (isRecord(rawCategory)) {
+    if (typeof rawCategory.id === "string") return rawCategory.id;
+    if (typeof rawCategory._id === "string") return rawCategory._id;
+    if (typeof rawCategory.slug === "string") return rawCategory.slug;
+    if (typeof rawCategory.name === "string") return toSlug(rawCategory.name);
+  }
+
+  return "uncategorized";
+};
+
+const normalizeProduct = (raw: unknown): Product | null => {
+  if (!isRecord(raw)) return null;
+
+  const idValue =
+    typeof raw.id === "number"
+      ? raw.id
+      : typeof raw._id === "number"
+      ? raw._id
+      : Number(raw.id ?? raw._id ?? 0);
+
+  if (!Number.isFinite(idValue) || idValue <= 0) return null;
+
+  const name = typeof raw.name === "string" ? raw.name : "Unnamed Product";
+
+  return {
+    id: idValue,
+    name,
+    tags: typeof raw.tags === "string" ? raw.tags : "",
+    description: typeof raw.description === "string" ? raw.description : "",
+    price: typeof raw.price === "number" ? raw.price : Number(raw.price ?? 0),
+    unit: typeof raw.unit === "string" ? raw.unit : "1pc",
+    image:
+      typeof raw.image === "string" && raw.image.length > 0
+        ? raw.image
+        : "/premium-selection/1.png",
+    badge: typeof raw.badge === "string" ? raw.badge : null,
+    badgeClass: typeof raw.badgeClass === "string" ? raw.badgeClass : "",
+    category: readCategoryId(raw.category),
+  };
+};
+
+const normalizeCategory = (raw: unknown): Category | null => {
+  if (!isRecord(raw)) return null;
+
+  const id =
+    typeof raw.id === "string"
+      ? raw.id
+      : typeof raw._id === "string"
+      ? raw._id
+      : typeof raw.slug === "string"
+      ? raw.slug
+      : typeof raw.name === "string"
+      ? toSlug(raw.name)
+      : null;
+
+  const label =
+    typeof raw.label === "string"
+      ? raw.label
+      : typeof raw.name === "string"
+      ? raw.name
+      : null;
+
+  if (!id || !label) return null;
+
+  return { id, label };
+};
+
 export const CollectionService = {
   getProducts: async (): Promise<Product[]> => {
-    await sleep(800);
-    return mockProducts;
+    try {
+      const response = await http.get("/products");
+      const products = readArray(response.data)
+        .map(normalizeProduct)
+        .filter((item): item is Product => item !== null);
+
+      return products.length > 0 ? products : mockProducts;
+    } catch {
+      await sleep(800);
+      return mockProducts;
+    }
+  },
+  getCategories: async (): Promise<Category[]> => {
+    try {
+      const response = await http.get("/categories");
+      const categories = readArray(response.data)
+        .map(normalizeCategory)
+        .filter((item): item is Category => item !== null);
+
+      return categories.length > 0 ? categories : mockCategories;
+    } catch {
+      await sleep(400);
+      return mockCategories;
+    }
   },
   getProductById: async (id: number): Promise<Product> => {
-    await sleep(700);
-    const product = mockProducts.find((item) => item.id === id);
-    if (!product) {
-      throw new Error("Product not found");
+    try {
+      const response = await http.get(`/products/${id}`);
+      const product = normalizeProduct(readData(response.data));
+
+      if (!product) throw new Error("Product not found");
+      return product;
+    } catch {
+      await sleep(700);
+      const product = mockProducts.find((item) => item.id === id);
+      if (!product) {
+        throw new Error("Product not found");
+      }
+      return product;
     }
-    return product;
   },
   getRelatedProducts: async (
     productId: number,
     category: string
   ): Promise<Product[]> => {
+    try {
+      const response = await http.get(`/products/${productId}/related`);
+      const products = readArray(response.data)
+        .map(normalizeProduct)
+        .filter((item): item is Product => item !== null)
+        .slice(0, 4);
+
+      if (products.length > 0) return products;
+    } catch {
+      // Fallback to local matching logic.
+    }
+
     await sleep(500);
     return mockProducts
       .filter((item) => item.id !== productId && item.category === category)

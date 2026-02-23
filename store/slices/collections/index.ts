@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import {
   CollectionService,
+  type Category,
   type Product,
 } from "@/services/collection/index.service";
 
@@ -12,6 +13,13 @@ export const fetchProducts = createAsyncThunk(
   "collections/fetchProducts",
   async () => {
     return await CollectionService.getProducts();
+  }
+);
+
+export const fetchCategories = createAsyncThunk(
+  "collections/fetchCategories",
+  async () => {
+    return await CollectionService.getCategories();
   }
 );
 
@@ -44,8 +52,11 @@ export const fetchRelatedProducts = createAsyncThunk<
 
 interface CollectionsState {
   products: Product[];
+  categories: Category[];
   loading: boolean;
+  categoriesLoading: boolean;
   error: string | null;
+  categoriesError: string | null;
   currentProduct: Product | null;
   currentProductLoading: boolean;
   currentProductError: string | null;
@@ -58,8 +69,11 @@ interface CollectionsState {
 
 const initialState: CollectionsState = {
   products: [],
+  categories: [],
   loading: false,
+  categoriesLoading: false,
   error: null,
+  categoriesError: null,
   currentProduct: null,
   currentProductLoading: false,
   currentProductError: null,
@@ -104,6 +118,20 @@ export const collectionsSlice = createSlice({
       .addCase(fetchProducts.rejected, (state) => {
         state.loading = false;
         state.error = "Unable to load products right now. Please try again.";
+      })
+      .addCase(fetchCategories.pending, (state) => {
+        state.categoriesLoading = true;
+        state.categoriesError = null;
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.categories = action.payload;
+        state.categoriesLoading = false;
+        state.categoriesError = null;
+      })
+      .addCase(fetchCategories.rejected, (state) => {
+        state.categoriesLoading = false;
+        state.categoriesError =
+          "Unable to load categories right now. Please try again.";
       })
       .addCase(fetchProductById.pending, (state) => {
         state.currentProductLoading = true;
