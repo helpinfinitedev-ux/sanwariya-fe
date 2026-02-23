@@ -1,7 +1,7 @@
 import http from "../http/index.service";
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   tags: string;
   description: string;
@@ -20,7 +20,7 @@ export interface Category {
 
 const mockProducts: Product[] = [
   {
-    id: 1,
+    id: "1",
     name: "Royal Gulab Jamun",
     tags: "GHEE ROASTED • SAFFRON INFUSED",
     description:
@@ -33,7 +33,7 @@ const mockProducts: Product[] = [
     category: "gulab-jamun",
   },
   {
-    id: 2,
+    id: "2",
     name: "Shahi Motichoor Ladoo",
     tags: "TRADITIONAL RECIPE • FINE PEARLS",
     description:
@@ -46,7 +46,7 @@ const mockProducts: Product[] = [
     category: "ladoo",
   },
   {
-    id: 3,
+    id: "3",
     name: "Silver Kaju Katli",
     tags: "PREMIUM CASHEWS • THIN CUT",
     description:
@@ -59,7 +59,7 @@ const mockProducts: Product[] = [
     category: "barfi",
   },
   {
-    id: 4,
+    id: "4",
     name: "Emerald Pista Barfi",
     tags: "CALIFORNIA PISTACHIOS • RICH MILK",
     description:
@@ -72,7 +72,7 @@ const mockProducts: Product[] = [
     category: "barfi",
   },
   {
-    id: 5,
+    id: "5",
     name: "Desi Besan Ladoo",
     tags: "ARTISANAL ROASTED • COARSE GRAIN",
     description:
@@ -85,7 +85,7 @@ const mockProducts: Product[] = [
     category: "ladoo",
   },
   {
-    id: 6,
+    id: "6",
     name: "Exotic Rose Sandesh",
     tags: "FRESH CHHENA • DAMASK ROSE",
     description:
@@ -98,7 +98,7 @@ const mockProducts: Product[] = [
     category: "dry-fruit",
   },
   {
-    id: 7,
+    id: "7",
     name: "Kesar Peda",
     tags: "PURE SAFFRON • CONDENSED MILK",
     description:
@@ -111,7 +111,7 @@ const mockProducts: Product[] = [
     category: "dry-fruit",
   },
   {
-    id: 8,
+    id: "8",
     name: "Coconut Barfi",
     tags: "FRESH COCONUT • PURE GHEE",
     description:
@@ -124,7 +124,7 @@ const mockProducts: Product[] = [
     category: "barfi",
   },
   {
-    id: 9,
+    id: "9",
     name: "Premium Dry Fruit Roll",
     tags: "MIXED NUTS • SILVER LEAF",
     description:
@@ -137,7 +137,7 @@ const mockProducts: Product[] = [
     category: "dry-fruit",
   },
   {
-    id: 10,
+    id: "10",
     name: "Classic Rasgulla",
     tags: "FRESH CHHENA • SUGAR SYRUP",
     description:
@@ -150,7 +150,7 @@ const mockProducts: Product[] = [
     category: "gulab-jamun",
   },
   {
-    id: 11,
+    id: "11",
     name: "Mysore Pak",
     tags: "GRAM FLOUR • CLARIFIED BUTTER",
     description:
@@ -163,7 +163,7 @@ const mockProducts: Product[] = [
     category: "barfi",
   },
   {
-    id: 12,
+    id: "12",
     name: "Angoor Rabdi",
     tags: "SAFFRON MILK • GRAPE-SIZED",
     description:
@@ -192,13 +192,18 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const readData = (payload: unknown): unknown => {
   if (!isRecord(payload)) return payload;
+  if ("result" in payload) return payload.result;
   if ("data" in payload) return payload.data;
   return payload;
 };
 
-const readArray = (payload: unknown): unknown[] => {
+const readArray = (payload: unknown, key?: string): unknown[] => {
   const data = readData(payload);
-  return Array.isArray(data) ? data : [];
+  if (Array.isArray(data)) return data;
+  if (key && isRecord(data) && Array.isArray(data[key])) {
+    return data[key] as unknown[];
+  }
+  return [];
 };
 
 const toSlug = (value: string): string =>
@@ -227,13 +232,17 @@ const normalizeProduct = (raw: unknown): Product | null => {
   if (!isRecord(raw)) return null;
 
   const idValue =
-    typeof raw.id === "number"
+    typeof raw.id === "string"
       ? raw.id
-      : typeof raw._id === "number"
+      : typeof raw._id === "string"
       ? raw._id
-      : Number(raw.id ?? raw._id ?? 0);
+      : typeof raw.id === "number"
+      ? String(raw.id)
+      : typeof raw._id === "number"
+      ? String(raw._id)
+      : "";
 
-  if (!Number.isFinite(idValue) || idValue <= 0) return null;
+  if (!idValue) return null;
 
   const name = typeof raw.name === "string" ? raw.name : "Unnamed Product";
 
@@ -245,9 +254,13 @@ const normalizeProduct = (raw: unknown): Product | null => {
     price: typeof raw.price === "number" ? raw.price : Number(raw.price ?? 0),
     unit: typeof raw.unit === "string" ? raw.unit : "1pc",
     image:
-      typeof raw.image === "string" && raw.image.length > 0
+      (typeof raw.image === "string" && raw.image.length > 0
         ? raw.image
-        : "/premium-selection/1.png",
+        : Array.isArray(raw.images) &&
+          typeof raw.images[0] === "string" &&
+          raw.images[0].length > 0
+        ? raw.images[0]
+        : "/premium-selection/1.png"),
     badge: typeof raw.badge === "string" ? raw.badge : null,
     badgeClass: typeof raw.badgeClass === "string" ? raw.badgeClass : "",
     category: readCategoryId(raw.category),
@@ -284,7 +297,7 @@ export const CollectionService = {
   getProducts: async (): Promise<Product[]> => {
     try {
       const response = await http.get("/products");
-      const products = readArray(response.data)
+      const products = readArray(response.data, "products")
         .map(normalizeProduct)
         .filter((item): item is Product => item !== null);
 
@@ -297,7 +310,7 @@ export const CollectionService = {
   getCategories: async (): Promise<Category[]> => {
     try {
       const response = await http.get("/categories");
-      const categories = readArray(response.data)
+      const categories = readArray(response.data, "categories")
         .map(normalizeCategory)
         .filter((item): item is Category => item !== null);
 
@@ -307,10 +320,13 @@ export const CollectionService = {
       return mockCategories;
     }
   },
-  getProductById: async (id: number): Promise<Product> => {
+  getProductById: async (id: string): Promise<Product> => {
     try {
       const response = await http.get(`/products/${id}`);
-      const product = normalizeProduct(readData(response.data));
+      const data = readData(response.data);
+      const product = normalizeProduct(
+        isRecord(data) && "product" in data ? data.product : data
+      );
 
       if (!product) throw new Error("Product not found");
       return product;
@@ -324,19 +340,21 @@ export const CollectionService = {
     }
   },
   getRelatedProducts: async (
-    productId: number,
+    productId: string,
     category: string
   ): Promise<Product[]> => {
-    try {
-      const response = await http.get(`/products/${productId}/related`);
-      const products = readArray(response.data)
-        .map(normalizeProduct)
-        .filter((item): item is Product => item !== null)
-        .slice(0, 4);
+    const products = await CollectionService.getProducts();
+    const related = products
+      .filter((item) => item.id !== productId && item.category === category)
+      .concat(
+        products.filter(
+          (item) => item.id !== productId && item.category !== category
+        )
+      )
+      .slice(0, 4);
 
-      if (products.length > 0) return products;
-    } catch {
-      // Fallback to local matching logic.
+    if (related.length > 0) {
+      return related;
     }
 
     await sleep(500);

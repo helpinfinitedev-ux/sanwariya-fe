@@ -26,17 +26,15 @@ const ProductDetailsContainer = ({ productId }: ProductDetailsContainerProps) =>
     relatedProducts,
   } = useAppSelector((state) => state.collections);
 
-  const parsedId = Number(productId);
-
   useEffect(() => {
-    if (Number.isInteger(parsedId) && parsedId > 0) {
-      dispatch(fetchProductById(parsedId));
+    if (productId) {
+      dispatch(fetchProductById(productId));
     }
 
     return () => {
       dispatch(collectionsActions.clearProductDetailsState());
     };
-  }, [dispatch, parsedId]);
+  }, [dispatch, productId]);
 
   useEffect(() => {
     if (currentProduct) {
@@ -49,7 +47,7 @@ const ProductDetailsContainer = ({ productId }: ProductDetailsContainerProps) =>
     }
   }, [dispatch, currentProduct]);
 
-  if (!Number.isInteger(parsedId) || parsedId <= 0) {
+  if (!productId) {
     return (
       <ProductState
         title="Invalid Product"
@@ -72,9 +70,7 @@ const ProductDetailsContainer = ({ productId }: ProductDetailsContainerProps) =>
             ? "This item may have been removed or is no longer available."
             : currentProductError
         }
-        retry={
-          isNotFoundError ? undefined : () => dispatch(fetchProductById(parsedId))
-        }
+        retry={isNotFoundError ? undefined : () => dispatch(fetchProductById(productId))}
       />
     );
   }
@@ -84,7 +80,7 @@ const ProductDetailsContainer = ({ productId }: ProductDetailsContainerProps) =>
       <ProductState
         title="Unable to Load Product"
         message="Please try again in a moment."
-        retry={() => dispatch(fetchProductById(parsedId))}
+        retry={() => dispatch(fetchProductById(productId))}
       />
     );
   }

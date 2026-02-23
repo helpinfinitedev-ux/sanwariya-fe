@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-redux";
-import {
-  fetchCategories,
-  fetchProducts,
-  collectionsActions,
-} from "@/store/slices/collections";
+import { fetchProducts } from "@/store/slices/products";
+import { fetchCategories } from "@/store/slices/categories";
 import CollectionHeader from "./_components/collection-header";
 import CategoryFilters from "./_components/category-filters";
 import ProductGrid from "./_components/product-grid";
@@ -17,27 +14,29 @@ const ITEMS_PER_PAGE = 6;
 
 export default function CollectionsPage() {
   const dispatch = useAppDispatch();
-  const { products, categories, loading, activeCategory, currentPage } =
-    useAppSelector((state) => state.collections);
+  const { products, loading } = useAppSelector((state) => state.products);
+  const { categories } = useAppSelector((state) => state.categories);
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     dispatch(fetchProducts());
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  const categoryOptions: Category[] = [
-    { id: "all", label: "All Delicacies" },
-    ...categories.filter((category) => category.id !== "all"),
-  ];
+  const categoryOptions: Category[] = useMemo(
+    () => [
+      { id: "all", label: "All Delicacies" },
+      ...categories.filter((category) => category.id !== "all"),
+    ],
+    [categories]
+  );
 
-  useEffect(() => {
-    if (
-      activeCategory !== "all" &&
-      !categories.some((category) => category.id === activeCategory)
-    ) {
-      dispatch(collectionsActions.setActiveCategory("all"));
-    }
-  }, [activeCategory, categories, dispatch]);
+  const effectiveActiveCategory =
+    activeCategory === "all" ||
+    categories.some((category) => category.id === activeCategory)
+      ? activeCategory
+      : "all";
 
   const hasBackendCategories = categories.length > 0;
   const categoryScopedProducts = hasBackendCategories
@@ -47,26 +46,29 @@ export default function CollectionsPage() {
     : products;
 
   const filteredProducts =
-    activeCategory === "all"
+    effectiveActiveCategory === "all"
       ? categoryScopedProducts
-      : products.filter((p) => p.category === activeCategory);
+      : products.filter((p) => p.category === effectiveActiveCategory);
 
   const totalPages = Math.max(
     1,
     Math.ceil(filteredProducts.length / ITEMS_PER_PAGE)
   );
 
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+
   const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (safeCurrentPage - 1) * ITEMS_PER_PAGE,
+    safeCurrentPage * ITEMS_PER_PAGE
   );
 
   const handleCategoryChange = (categoryId: string) => {
-    dispatch(collectionsActions.setActiveCategory(categoryId));
+    setActiveCategory(categoryId);
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
-    dispatch(collectionsActions.setCurrentPage(page));
+    setCurrentPage(page);
   };
 
   return (
@@ -75,12 +77,12 @@ export default function CollectionsPage() {
         <CollectionHeader />
         <CategoryFilters
           categories={categoryOptions}
-          activeCategory={activeCategory}
+          activeCategory={effectiveActiveCategory}
           onCategoryChange={handleCategoryChange}
         />
         <ProductGrid products={paginatedProducts} loading={loading} />
         <CollectionPagination
-          currentPage={currentPage}
+          currentPage={safeCurrentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
         />

@@ -1,31 +1,9 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
-import {
-  CollectionService,
-  type Category,
-  type Product,
-} from "@/services/collection/index.service";
-
-export const fetchProducts = createAsyncThunk(
-  "collections/fetchProducts",
-  async () => {
-    return await CollectionService.getProducts();
-  }
-);
-
-export const fetchCategories = createAsyncThunk(
-  "collections/fetchCategories",
-  async () => {
-    return await CollectionService.getCategories();
-  }
-);
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { CollectionService, type Product } from "@/services/collection/index.service";
 
 export const fetchProductById = createAsyncThunk<
   Product,
-  number,
+  string,
   { rejectValue: string }
 >("collections/fetchProductById", async (id, { rejectWithValue }) => {
   try {
@@ -37,7 +15,7 @@ export const fetchProductById = createAsyncThunk<
 
 export const fetchRelatedProducts = createAsyncThunk<
   Product[],
-  { productId: number; category: string },
+  { productId: string; category: string },
   { rejectValue: string }
 >(
   "collections/fetchRelatedProducts",
@@ -51,50 +29,27 @@ export const fetchRelatedProducts = createAsyncThunk<
 );
 
 interface CollectionsState {
-  products: Product[];
-  categories: Category[];
-  loading: boolean;
-  categoriesLoading: boolean;
-  error: string | null;
-  categoriesError: string | null;
   currentProduct: Product | null;
   currentProductLoading: boolean;
   currentProductError: string | null;
   relatedProducts: Product[];
   relatedProductsLoading: boolean;
   relatedProductsError: string | null;
-  activeCategory: string;
-  currentPage: number;
 }
 
 const initialState: CollectionsState = {
-  products: [],
-  categories: [],
-  loading: false,
-  categoriesLoading: false,
-  error: null,
-  categoriesError: null,
   currentProduct: null,
   currentProductLoading: false,
   currentProductError: null,
   relatedProducts: [],
   relatedProductsLoading: false,
   relatedProductsError: null,
-  activeCategory: "all",
-  currentPage: 1,
 };
 
 export const collectionsSlice = createSlice({
   name: "collections",
   initialState,
   reducers: {
-    setActiveCategory: (state, action: PayloadAction<string>) => {
-      state.activeCategory = action.payload;
-      state.currentPage = 1;
-    },
-    setCurrentPage: (state, action: PayloadAction<number>) => {
-      state.currentPage = action.payload;
-    },
     clearProductDetailsState: (state) => {
       state.currentProduct = null;
       state.currentProductLoading = false;
@@ -106,33 +61,6 @@ export const collectionsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.products = action.payload;
-        state.loading = false;
-        state.error = null;
-      })
-      .addCase(fetchProducts.rejected, (state) => {
-        state.loading = false;
-        state.error = "Unable to load products right now. Please try again.";
-      })
-      .addCase(fetchCategories.pending, (state) => {
-        state.categoriesLoading = true;
-        state.categoriesError = null;
-      })
-      .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.categories = action.payload;
-        state.categoriesLoading = false;
-        state.categoriesError = null;
-      })
-      .addCase(fetchCategories.rejected, (state) => {
-        state.categoriesLoading = false;
-        state.categoriesError =
-          "Unable to load categories right now. Please try again.";
-      })
       .addCase(fetchProductById.pending, (state) => {
         state.currentProductLoading = true;
         state.currentProductError = null;
