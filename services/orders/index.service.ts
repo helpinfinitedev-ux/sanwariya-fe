@@ -1,7 +1,9 @@
+import http from "../http/index.service";
+
 export type OrderStatus = "pending" | "shipped" | "in-transit" | "delivered";
 
 export interface OrderItem {
-  id: number;
+  id: string;
   name: string;
   image: string;
   quantity: number;
@@ -18,91 +20,88 @@ export interface Order {
   items: OrderItem[];
 }
 
-const mockOrders: Order[] = [
-  {
-    id: "SW-614728",
-    status: "in-transit",
-    placedAt: "2026-02-22T10:30:00.000Z",
-    expectedBy: "2026-02-24T18:00:00.000Z",
-    deliveryAddress: "16-2 Laxman Colony, 4 Jalan Colony, Jaipur, 302004",
-    items: [
-      {
-        id: 1,
-        name: "Royal Gulab Jamun",
-        image: "/premium-selection/1.png",
-        quantity: 2,
-        unit: "500g",
-        price: 450,
-      },
-      {
-        id: 2,
-        name: "Silver Kaju Katli",
-        image: "/premium-selection/3.png",
-        quantity: 1,
-        unit: "500g",
-        price: 600,
-      },
-      {
-        id: 3,
-        name: "Desi Besan Ladoo",
-        image: "/premium-selection/2.png",
-        quantity: 1,
-        unit: "500g",
-        price: 350,
-      },
-    ],
-  },
-  {
-    id: "SW-514101",
-    status: "delivered",
-    placedAt: "2026-02-17T09:20:00.000Z",
-    expectedBy: "2026-02-19T16:30:00.000Z",
-    deliveryAddress: "C-Scheme, Jaipur, Rajasthan",
-    items: [
-      {
-        id: 4,
-        name: "Kesar Peda",
-        image: "/premium-selection/1.png",
-        quantity: 1,
-        unit: "500g",
-        price: 420,
-      },
-      {
-        id: 5,
-        name: "Premium Dry Fruit Roll",
-        image: "/premium-selection/3.png",
-        quantity: 1,
-        unit: "500g",
-        price: 800,
-      },
-    ],
-  },
-  {
-    id: "SW-473392",
-    status: "delivered",
-    placedAt: "2026-02-08T11:50:00.000Z",
-    expectedBy: "2026-02-10T17:00:00.000Z",
-    deliveryAddress: "Malviya Nagar, Jaipur, Rajasthan",
-    items: [
-      {
-        id: 6,
-        name: "Shahi Motichoor Ladoo",
-        image: "/premium-selection/2.png",
-        quantity: 2,
-        unit: "500g",
-        price: 380,
-      },
-    ],
-  },
-];
+interface ApiResponse<T> {
+  message: string;
+  result: T;
+}
 
-const sleep = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
-export const OrdersService = {
-  getMyOrders: async (): Promise<Order[]> => {
-    await sleep(900);
-    return mockOrders;
-  },
+type RawProduct = {
+  _id?: string;
+  id?: string;
+  name?: string;
+  images?: string[];
 };
 
+type RawOrderItem = {
+  _id?: string;
+  id?: string;
+  productId?: string | RawProduct;
+  quantity?: number;
+  unit?: string;
+  price?: number;
+};
+
+type RawOrder = {
+  _id?: string;
+  id?: string;
+  status?: OrderStatus;
+  createdAt?: string;
+  expectedDeliveryDate?: string;
+  address?: string;
+  items?: RawOrderItem[];
+};
+
+const fallbackImage = "/premium-selection/1.png";
+
+const readProduct = (value: RawOrderItem["productId"]): RawProduct | null =>
+  typeof value === "object" && value ? value : null;
+
+const normalizeItem = (item: RawOrderItem): OrderItem | null => {
+  const product = readProduct(item.productId);
+  const productId =
+    typeof item.productId === "string"
+      ? item.productId
+      : product?._id || product?.id || "";
+
+  if (!productId) return null;
+
+  return {
+    id: item._id || item.id || productId,
+    name: product?.name || "Sweet Box",
+    image: Array.isArray(product?.images) && product?.images[0] ? product.images[0] : fallbackImage,
+    quantity: typeof item.quantity === "number" && item.quantity > 0 ? item.quantity : 1,
+    unit: item.unit || "pcs",
+    price: typeof item.price === "number" ? item.price : 0,
+  };
+};
+
+const normalizeOrder = (order: RawOrder): Order | null => {
+  const id = order._id || order.id;
+  if (!id) return null;
+
+  const items = (order.items || [])
+    .map(normalizeItem)
+    .filter((item): item is OrderItem => item !== null);
+
+  return {
+    id,
+    status: order.status || "pending",
+    placedAt: order.createdAt || new Date().toISOString(),
+    expectedBy: order.expectedDeliveryDate || new Date().toISOString(),
+    deliveryAddress: order.address || "",
+    items,
+  };
+};
+
+export const OrdersService = {
+  getMyOrders: async (userId: string): Promise<Order[]> => {
+    http.setJWT();
+    const response = await http.get<ApiResponse<{ orders: RawOrder[] }>>("/orders", {
+      params: { userId, page: 1, limit: 100, sort: "createdAt:desc" },
+    });
+
+    return (response.data.result?.orders || [])
+      .map(normalizeOrder)
+      .filter((item): item is Order => item !== null);
+  },
+};

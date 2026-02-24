@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-redux";
 import { cartActions, placeOrder } from "@/store/slices/cart";
-import type { CartItem } from "@/services/cart/index.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +18,6 @@ import {
 } from "@/components/ui/dialog";
 
 interface CartCheckoutDialogProps {
-  items: CartItem[];
   total: number;
   disabled: boolean;
 }
@@ -38,11 +36,12 @@ const confettiPieces = [
   { left: "88%", delay: 0.12, duration: 1.95, color: "#f5daa7" },
 ];
 
-const CartCheckoutDialog = ({ items, total, disabled }: CartCheckoutDialogProps) => {
+const CartCheckoutDialog = ({ total, disabled }: CartCheckoutDialogProps) => {
   const dispatch = useAppDispatch();
   const { placingOrder, placeOrderError, lastOrderId } = useAppSelector(
     (state) => state.cart
   );
+  const user = useAppSelector((state) => state.user.user);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [phone, setPhone] = useState("");
@@ -54,6 +53,8 @@ const CartCheckoutDialog = ({ items, total, disabled }: CartCheckoutDialogProps)
     if (open) {
       dispatch(cartActions.clearOrderFeedback());
       setFormError(null);
+      setPhone(user?.phoneNumber || "");
+      setAddress(user?.address || "");
     }
   };
 
@@ -78,9 +79,8 @@ const CartCheckoutDialog = ({ items, total, disabled }: CartCheckoutDialogProps)
     try {
       await dispatch(
         placeOrder({
-          phone: trimmedPhone,
+          phoneNumber: trimmedPhone,
           address: trimmedAddress,
-          items,
         })
       ).unwrap();
       setCheckoutOpen(false);
@@ -213,4 +213,3 @@ const CartCheckoutDialog = ({ items, total, disabled }: CartCheckoutDialogProps)
 };
 
 export default CartCheckoutDialog;
-

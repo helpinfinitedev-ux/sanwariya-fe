@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { Minus, Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-redux";
-import { cartActions, fetchCartDetails } from "@/store/slices/cart";
+import { fetchCartDetails, updateCartItemQuantity } from "@/store/slices/cart";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -16,7 +16,7 @@ import CartCheckoutDialog from "./cart-checkout-dialog";
 
 const CartDrawer = () => {
   const dispatch = useAppDispatch();
-  const { items, loading, error } = useAppSelector((state) => state.cart);
+  const { items, loading, error, updatingItem } = useAppSelector((state) => state.cart);
   const [open, setOpen] = useState(false);
 
   const total = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);
@@ -84,11 +84,25 @@ const CartDrawer = () => {
                       <p className="mt-2 text-gold-bright font-semibold">₹{item.price}</p>
 
                       <div className="mt-2 inline-flex w-fit items-center rounded-md border border-gold/25 bg-maroon/60">
-                        <Button type="button" variant="ghost" size="icon-sm" className="text-beige hover:bg-maroon/80" onClick={() => dispatch(cartActions.decreaseQuantity(item.id))}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-beige hover:bg-maroon/80"
+                          disabled={updatingItem}
+                          onClick={() => dispatch(updateCartItemQuantity({ itemId: item.id, delta: -1 }))}
+                        >
                           <Minus className="size-4" />
                         </Button>
                         <span className="min-w-8 text-center text-sm text-white">{item.quantity}</span>
-                        <Button type="button" variant="ghost" size="icon-sm" className="text-beige hover:bg-maroon/80" onClick={() => dispatch(cartActions.increaseQuantity(item.id))}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-beige hover:bg-maroon/80"
+                          disabled={updatingItem}
+                          onClick={() => dispatch(updateCartItemQuantity({ itemId: item.id, delta: 1 }))}
+                        >
                           <Plus className="size-4" />
                         </Button>
                       </div>
@@ -106,7 +120,7 @@ const CartDrawer = () => {
             <p className="text-beige/75">Total</p>
             <p className="text-2xl font-semibold text-gold-bright">₹{total}</p>
           </div>
-          <CartCheckoutDialog items={items} total={total} disabled={!items.length || loading} />
+          <CartCheckoutDialog total={total} disabled={!items.length || loading || updatingItem} />
         </div>
       </SheetContent>
     </Sheet>

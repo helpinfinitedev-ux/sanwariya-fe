@@ -12,6 +12,7 @@ import PastOrdersList from "./past-orders-list";
 const MyOrdersContainer = () => {
   const dispatch = useAppDispatch();
   const { orders, loading, error } = useAppSelector((state) => state.orders);
+  const user = useAppSelector((state) => state.user.user);
 
   useEffect(() => {
     if (!orders.length) {
@@ -70,7 +71,11 @@ const MyOrdersContainer = () => {
 
         {!loading && !error && !orders.length ? (
           <Card className="border-gold/30 bg-maroon/45 p-6 text-beige">
-            <p>You haven&apos;t placed any orders yet.</p>
+            <p>
+              {user
+                ? "You haven't placed any orders yet."
+                : "Please login to view your orders."}
+            </p>
           </Card>
         ) : null}
 
@@ -93,4 +98,3 @@ const MyOrdersContainer = () => {
 };
 
 export default MyOrdersContainer;
-

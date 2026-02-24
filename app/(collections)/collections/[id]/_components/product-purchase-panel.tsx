@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Heart, Minus, Package2, Plus, ShieldCheck, Star, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Product } from "@/services/collection/index.service";
+import { useAppDispatch, useAppSelector } from "@/hooks/use-redux";
+import { addItemToCart } from "@/store/slices/cart";
+import { toast } from "sonner";
 
 interface ProductPurchasePanelProps {
   product: Product;
@@ -12,11 +15,34 @@ interface ProductPurchasePanelProps {
 const weights = ["500g", "1kg", "2kg"];
 
 const ProductPurchasePanel = ({ product }: ProductPurchasePanelProps) => {
+  const dispatch = useAppDispatch();
+  const { addingItem } = useAppSelector((state) => state.cart);
   const [selectedWeight, setSelectedWeight] = useState(weights[0]);
   const [quantity, setQuantity] = useState(1);
 
   const increase = () => setQuantity((prev) => prev + 1);
   const decrease = () => setQuantity((prev) => Math.max(1, prev - 1));
+
+  const handleAddToCart = async () => {
+    const unit = selectedWeight.includes("kg") ? "kg" : "g";
+    const result = await dispatch(
+      addItemToCart({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        unit,
+        image: product.image,
+        quantity,
+      })
+    );
+
+    if (addItemToCart.fulfilled.match(result)) {
+      toast.success("Item added to cart");
+      return;
+    }
+
+    toast.error((result.payload as string) || "Unable to add item to cart");
+  };
 
   return (
     <aside className="rounded-2xl border border-gold/35 bg-maroon/45 p-7 backdrop-blur-sm lg:p-8">
@@ -100,8 +126,8 @@ const ProductPurchasePanel = ({ product }: ProductPurchasePanelProps) => {
       </div>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <Button type="button" className="w-full sm:flex-1">
-          Add to Cart
+        <Button type="button" className="w-full sm:flex-1" disabled={addingItem} onClick={handleAddToCart}>
+          {addingItem ? "Adding..." : "Add to Cart"}
         </Button>
         <Button type="button" variant="gold-outline" className="sm:w-auto">
           <Heart className="size-4" />
