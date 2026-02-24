@@ -5,16 +5,19 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "../ui/input";
+import { Loader2 } from "lucide-react";
 
 const registerSchema = z
   .object({
-    fullName: z.string().min(1, "Full name is required"),
-    email: z.string().email("Please enter a valid email address"),
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    phoneNumber: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+    address: z.string().min(5, "Address is required"),
+    emailAddress: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
     terms: z.boolean().refine((val) => val === true, {
@@ -26,23 +29,27 @@ const registerSchema = z
     path: ["confirmPassword"],
   });
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+export type RegisterFormValues = z.infer<typeof registerSchema>;
 
-const RegisterForm = () => {
+interface RegisterFormProps {
+  onSubmit: (values: RegisterFormValues) => Promise<void> | void;
+  loading?: boolean;
+}
+
+const RegisterForm = ({ onSubmit, loading = false }: RegisterFormProps) => {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      address: "",
+      emailAddress: "",
       password: "",
       confirmPassword: "",
       terms: false,
     },
   });
-
-  const onSubmit = (data: RegisterFormValues) => {
-    console.log("Register:", data);
-  };
 
   return (
     <div className="w-full">
@@ -51,17 +58,46 @@ const RegisterForm = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          {/* Full Name */}
+          {/* Name */}
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">First Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Maharaja" className="text-white" />
+                  </FormControl>
+                  <FormMessage className="text-red-400 text-xs" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">Last Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Singh" className="text-white" />
+                  </FormControl>
+                  <FormMessage className="text-red-400 text-xs" />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Email Address */}
           <FormField
             control={form.control}
-            name="fullName"
+            name="emailAddress"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gold-secondary/80 text-md uppercase tracking-[3px] font-sans font-medium">Full Name</FormLabel>
+                <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">Email Address (Optional)</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    {/* <Icon icon="solar:user-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} /> */}
-                    <Input {...field} placeholder="Maharaja Singh" className="text-white" />
+                    <Input {...field} type="email" placeholder="royal@sanwariya.com" className="text-white" />
                   </div>
                 </FormControl>
                 <FormMessage className="text-red-400 text-xs" />
@@ -69,18 +105,30 @@ const RegisterForm = () => {
             )}
           />
 
-          {/* Email Address */}
+          {/* Phone Number */}
           <FormField
             control={form.control}
-            name="email"
+            name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">Email Address</FormLabel>
+                <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">Phone Number</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    {/* <Icon icon="solar:letter-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/40" width={18} /> */}
-                    <Input {...field} type="email" placeholder="royal@sanwariya.com" className="text-white" />
-                  </div>
+                  <Input {...field} type="tel" inputMode="numeric" maxLength={10} placeholder="9876543210" className="text-white" />
+                </FormControl>
+                <FormMessage className="text-red-400 text-xs" />
+              </FormItem>
+            )}
+          />
+
+          {/* Address */}
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gold-secondary/80 text-[11px] uppercase tracking-[3px] font-sans font-medium">Address</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="House no, street, city" className="text-white" />
                 </FormControl>
                 <FormMessage className="text-red-400 text-xs" />
               </FormItem>
@@ -152,8 +200,15 @@ const RegisterForm = () => {
           />
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full h-12 font-sans font-bold text-sm uppercase tracking-[2px]">
-            Create Account
+          <Button type="submit" className="w-full h-12 font-sans font-bold text-sm uppercase tracking-[2px]" disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Creating Account...
+              </>
+            ) : (
+              "Create Account"
+            )}
           </Button>
         </form>
       </Form>

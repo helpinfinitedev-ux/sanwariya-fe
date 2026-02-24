@@ -1,5 +1,6 @@
 import Slider from "@/components/slider";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import React from "react";
 
 const imageClassName = "object-contain w-full h-full rounded-xl";
@@ -39,25 +40,20 @@ const Hero = () => {
           </div>
 
           <div className="flex flex-col gap-3 sm:gap-5 lg:gap-8 flex-1 font-bold">
-            <p className="text-[36px] sm:text-[56px] lg:text-[96px] leading-[34px] sm:leading-[52px] lg:leading-[80px] text-[#d6c4a8]">
-              Feel The Taste
-            </p>
-            <p className="text-[42px] sm:text-[68px] lg:text-[120px] leading-[40px] sm:leading-[64px] lg:leading-[106px] logo-gold-pressed">
-              Of Tradition
-            </p>
+            <p className="text-[36px] sm:text-[56px] lg:text-[96px] leading-[34px] sm:leading-[52px] lg:leading-[80px] text-[#d6c4a8]">Feel The Taste</p>
+            <p className="text-[42px] sm:text-[68px] lg:text-[120px] leading-[40px] sm:leading-[64px] lg:leading-[106px] logo-gold-pressed">Of Tradition</p>
           </div>
 
           <div>
             <p className="text-sm sm:text-base lg:text-xl text-[#F5DAA7] font-semibold py-4 lg:py-8 tracking-[1px] lg:tracking-[2px] leading-[22px] sm:leading-[26px] lg:leading-[32px] max-w-lg mx-auto lg:mx-0">
-              Experience the zenith of Indian heritage sweets. Each piece is a
-              masterpiece of gold-pressed elegance and authentic flavor
+              Experience the zenith of Indian heritage sweets. Each piece is a masterpiece of gold-pressed elegance and authentic flavor
             </p>
           </div>
 
           <div className="flex justify-center lg:justify-start">
-            <Button className="text-base lg:text-xl text-navy font-semibold p-4 lg:p-6 px-8 lg:px-10">
-              Buy Now
-            </Button>
+            <Link href="/collections">
+              <Button className="text-base lg:text-xl text-navy font-semibold p-4 lg:p-6 px-8 lg:px-10">Buy Now</Button>
+            </Link>
           </div>
         </div>
 

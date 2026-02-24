@@ -1,5 +1,5 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import authReducer from "./slices/auth";
+import userReducer from "./slices/user";
 import collectionsReducer from "./slices/collections";
 import productsReducer from "./slices/products";
 import categoriesReducer from "./slices/categories";
@@ -8,7 +8,7 @@ import ordersReducer from "./slices/orders";
 import testimonialsReducer from "./slices/testimonials";
 
 const rootReducer = combineReducers({
-  auth: authReducer,
+  user: userReducer,
   collections: collectionsReducer,
   products: productsReducer,
   categories: categoriesReducer,

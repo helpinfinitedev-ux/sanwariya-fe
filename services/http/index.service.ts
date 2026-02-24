@@ -27,9 +27,11 @@ axios.interceptors.response.use(
   (res) => {
     const { config } = res;
     const { url, method } = config;
-    const { data } = res.data;
+    const { result, message } = res.data;
 
-    logger.info(`http ${method} response`, url, "\n", data);
+    // toast.success(message);
+
+    logger.info(`http ${method} response`, url, "\n", result);
 
     return res;
   },

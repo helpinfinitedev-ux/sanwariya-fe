@@ -14,7 +14,7 @@ export default function ContactPage() {
 
       <section className="container mx-auto px-4 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          <div className="order-2 lg:order-1">
+          <div className="order-1 lg:order-1">
             <ContactForm />
           </div>
           <div className="order-1 lg:order-2 space-y-8">
