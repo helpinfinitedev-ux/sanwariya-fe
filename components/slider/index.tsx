@@ -13,7 +13,7 @@ interface SliderProps {
 
 const Slider = ({ items }: SliderProps) => {
   return (
-    <div className="w-full py-4 sm:py-6 lg:py-8 mt-4 lg:mt-8">
+    <div className="custom-slider w-full py-4 sm:py-6 lg:py-8 mt-4 lg:mt-8">
       <Swiper
         modules={[Navigation, Pagination, FreeMode, Autoplay]}
         spaceBetween={20}
@@ -41,23 +41,23 @@ const Slider = ({ items }: SliderProps) => {
       </Swiper>
 
       <style jsx global>{`
-        .swiper-slide {
+        .custom-slider .swiper-slide {
           width: 100% !important;
         }
-        .swiper-button-next,
-        .swiper-button-prev {
+        .custom-slider .swiper-button-next,
+        .custom-slider .swiper-button-prev {
           color: #000;
           background: white;
           width: 40px;
           height: 40px;
           border-radius: 50%;
         }
-        .swiper-button-next:after,
-        .swiper-button-prev:after {
+        .custom-slider .swiper-button-next:after,
+        .custom-slider .swiper-button-prev:after {
           font-size: 18px;
           font-weight: bold;
         }
-        .swiper-pagination-bullet-active {
+        .custom-slider .swiper-pagination-bullet-active {
           background: #3b82f6 !important;
         }
       `}</style>

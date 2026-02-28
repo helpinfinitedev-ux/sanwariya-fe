@@ -3,7 +3,7 @@ import http from "../http/index.service";
 export interface Testimonial {
   id: string;
   customerName: string;
-  location: string;
+  customerLocation: string;
   postedAt: string;
   rating: number;
   message: string;
@@ -13,46 +13,40 @@ const mockTestimonials: Testimonial[] = [
   {
     id: "1",
     customerName: "Rohan Mehta",
-    location: "Jaipur",
+    customerLocation: "Jaipur",
     postedAt: "1 day ago",
     rating: 5,
-    message:
-      "The gulab jamun was soft, rich, and balanced. Packaging felt premium, and the delivery was perfectly on time.",
+    message: "The gulab jamun was soft, rich, and balanced. Packaging felt premium, and the delivery was perfectly on time.",
   },
   {
     id: "2",
     customerName: "Blossom Menezes",
-    location: "Mumbai",
+    customerLocation: "Mumbai",
     postedAt: "3 days ago",
     rating: 5,
-    message:
-      "Sanwariya has become my default for gifting. The saffron notes and texture quality feel consistently top-tier.",
+    message: "Sanwariya has become my default for gifting. The saffron notes and texture quality feel consistently top-tier.",
   },
   {
     id: "3",
     customerName: "Aarav Sethi",
-    location: "Delhi",
+    customerLocation: "Delhi",
     postedAt: "5 days ago",
     rating: 4,
-    message:
-      "Excellent flavors and clean ingredient profile. Their motichoor ladoo has a fresh homemade finish I really liked.",
+    message: "Excellent flavors and clean ingredient profile. Their motichoor ladoo has a fresh homemade finish I really liked.",
   },
   {
     id: "4",
     customerName: "Niyati Shah",
-    location: "Ahmedabad",
+    customerLocation: "Ahmedabad",
     postedAt: "1 week ago",
     rating: 5,
-    message:
-      "The dry fruit barfi tasted luxurious and not overly sweet. It felt handcrafted, elegant, and worth the price.",
+    message: "The dry fruit barfi tasted luxurious and not overly sweet. It felt handcrafted, elegant, and worth the price.",
   },
 ];
 
-const sleep = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
 
 const readResult = (payload: unknown): unknown => {
   if (!isRecord(payload)) return payload;
@@ -77,32 +71,18 @@ const toPostedAt = (createdAt: string): string => {
 const normalizeTestimonial = (raw: unknown, index: number): Testimonial | null => {
   if (!isRecord(raw)) return null;
 
-  const id =
-    typeof raw._id === "string"
-      ? raw._id
-      : typeof raw.id === "string"
-      ? raw.id
-      : String(index + 1);
+  const id = typeof raw._id === "string" ? raw._id : typeof raw.id === "string" ? raw.id : String(index + 1);
 
-  const message =
-    typeof raw.comment === "string"
-      ? raw.comment
-      : typeof raw.message === "string"
-      ? raw.message
-      : "";
+  const message = typeof raw.comment === "string" ? raw.comment : typeof raw.message === "string" ? raw.message : "";
 
   if (!message) return null;
 
   return {
     id,
-    customerName: "Sanwariya Customer",
-    location: "India",
-    postedAt:
-      typeof raw.createdAt === "string" ? toPostedAt(raw.createdAt) : "Recently",
-    rating:
-      typeof raw.rating === "number"
-        ? raw.rating
-        : Number(raw.rating ?? 5) || 5,
+    customerName: typeof raw.customerName === "string" ? raw.customerName : "Sanwariya Customer",
+    customerLocation: typeof raw.customerLocation === "string" ? raw.customerLocation : "Jaunpur, India",
+    postedAt: typeof raw.createdAt === "string" ? toPostedAt(raw.createdAt) : "Recently",
+    rating: typeof raw.rating === "number" ? raw.rating : Number(raw.rating ?? 5) || 5,
     message,
   };
 };

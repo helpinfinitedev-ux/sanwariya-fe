@@ -18,6 +18,13 @@ interface AuthResponse {
   };
 }
 
+interface AuthUserResponse {
+  message: string;
+  result: {
+    user: AuthUser;
+  };
+}
+
 export const AuthService = {
   login: async (credentials: { phoneNumber: string; password: string }) => {
     const response = await http.post<AuthResponse>("/auth/login", credentials);
@@ -32,6 +39,16 @@ export const AuthService = {
     emailAddress?: string;
   }) => {
     const response = await http.post<AuthResponse>("/auth/register", payload);
+    return response.data;
+  },
+  getUser: async (phoneNumber: string) => {
+    const response = await http.get<AuthUserResponse>(`/auth/user/${phoneNumber}`);
+    return response.data;
+  },
+  updateUser: async (phoneNumber: string, password: string) => {
+    const response = await http.patch<AuthUserResponse>(`/auth/user/${phoneNumber}`, {
+      password,
+    });
     return response.data;
   },
   logout: () => {

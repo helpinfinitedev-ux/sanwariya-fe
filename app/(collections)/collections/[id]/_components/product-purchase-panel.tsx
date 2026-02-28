@@ -17,7 +17,7 @@ const weights = ["500g", "1kg", "2kg"];
 const ProductPurchasePanel = ({ product }: ProductPurchasePanelProps) => {
   const dispatch = useAppDispatch();
   const { addingItem } = useAppSelector((state) => state.cart);
-  const [selectedWeight, setSelectedWeight] = useState(weights[0]);
+  const [selectedWeight, setSelectedWeight] = useState(weights[1]);
   const [quantity, setQuantity] = useState(1);
 
   const increase = () => setQuantity((prev) => prev + 1);
@@ -44,14 +44,19 @@ const ProductPurchasePanel = ({ product }: ProductPurchasePanelProps) => {
     toast.error((result.payload as string) || "Unable to add item to cart");
   };
 
+  const getPrice = () => {
+    if (selectedWeight.includes("kg")) {
+      const quantity = +selectedWeight.replace("kg", "");
+      return product.price * quantity;
+    }
+    const quantity = selectedWeight.replace("g", "");
+    return product.price * (Number(quantity) / 1000);
+  };
+
   return (
     <aside className="rounded-2xl border border-gold/35 bg-maroon/45 p-7 backdrop-blur-sm lg:p-8">
-      <p className="text-gold-secondary/70 text-xs tracking-[3px] uppercase">
-        Verified Heritage Collection
-      </p>
-      <h1 className="mt-3 text-4xl leading-[1.05] text-white md:text-5xl font-sans font-bold">
-        {product.name}
-      </h1>
+      <p className="text-gold-secondary/70 text-xs tracking-[3px] uppercase">Verified Heritage Collection</p>
+      <h1 className="mt-3 text-4xl leading-[1.05] text-white md:text-5xl font-sans font-bold">{product.name}</h1>
 
       <div className="mt-4 flex items-center gap-3">
         <div className="flex items-center gap-1 text-gold-bright">
@@ -63,34 +68,22 @@ const ProductPurchasePanel = ({ product }: ProductPurchasePanelProps) => {
       </div>
 
       <div className="mt-5 flex items-end gap-2">
-        <span className="text-gold-bright text-4xl font-semibold">₹{product.price}</span>
+        <span className="text-gold-bright text-4xl font-semibold">₹{getPrice()}</span>
         <span className="pb-1 text-beige/55 text-sm">/{selectedWeight}</span>
       </div>
 
-      <blockquote className="mt-7 border-l border-gold/30 pl-4 text-beige/75 libertinus-serif-regular-italic">
-        A masterpiece of traditional confectionery.
-      </blockquote>
+      <blockquote className="mt-7 border-l border-gold/30 pl-4 text-beige/75 libertinus-serif-regular-italic">A masterpiece of traditional confectionery.</blockquote>
 
       <p className="mt-5 text-beige/80 leading-7 libertinus-serif-regular">
-        {product.description} Crafted in small batches with premium ingredients
-        and finished with slow-cooked precision for rich, memorable taste.
+        {product.description} Crafted in small batches with premium ingredients and finished with slow-cooked precision for rich, memorable taste.
       </p>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
         <div>
-          <p className="text-gold-secondary/65 text-[11px] tracking-[2px] uppercase">
-            Select Weight
-          </p>
+          <p className="text-gold-secondary/65 text-[11px] tracking-[2px] uppercase">Select Weight</p>
           <div className="mt-2 flex gap-2">
             {weights.map((weight) => (
-              <Button
-                key={weight}
-                type="button"
-                size="sm"
-                variant="gold-outline"
-                className={selectedWeight === weight ? "bg-gold/20 border-gold" : ""}
-                onClick={() => setSelectedWeight(weight)}
-              >
+              <Button key={weight} type="button" size="sm" variant="gold-outline" className={selectedWeight === weight ? "bg-gold/20 border-gold" : ""} onClick={() => setSelectedWeight(weight)}>
                 {weight}
               </Button>
             ))}
@@ -98,27 +91,13 @@ const ProductPurchasePanel = ({ product }: ProductPurchasePanelProps) => {
         </div>
 
         <div>
-          <p className="text-gold-secondary/65 text-[11px] tracking-[2px] uppercase">
-            Quantity
-          </p>
+          <p className="text-gold-secondary/65 text-[11px] tracking-[2px] uppercase">Quantity</p>
           <div className="mt-2 inline-flex items-center rounded-md border border-gold/30 bg-maroon/40">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              className="text-beige hover:bg-maroon/70"
-              onClick={decrease}
-            >
+            <Button type="button" variant="ghost" size="icon-sm" className="text-beige hover:bg-maroon/70" onClick={decrease}>
               <Minus />
             </Button>
             <span className="min-w-10 text-center text-sm text-white">{quantity}</span>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              className="text-beige hover:bg-maroon/70"
-              onClick={increase}
-            >
+            <Button type="button" variant="ghost" size="icon-sm" className="text-beige hover:bg-maroon/70" onClick={increase}>
               <Plus />
             </Button>
           </div>

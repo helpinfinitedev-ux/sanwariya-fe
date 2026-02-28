@@ -229,7 +229,7 @@ const normalizeProduct = (raw: unknown): Product | null => {
     tags: typeof raw.tags === "string" ? raw.tags : "",
     description: typeof raw.description === "string" ? raw.description : "",
     price: typeof raw.price === "number" ? raw.price : Number(raw.price ?? 0),
-    unit: typeof raw.unit === "string" ? raw.unit : "1pc",
+    unit: typeof raw.unit === "string" ? raw.unit : "Kg",
     image:
       typeof raw.image === "string" && raw.image.length > 0
         ? raw.image
@@ -262,7 +262,7 @@ export const CollectionService = {
         .map(normalizeProduct)
         .filter((item): item is Product => item !== null);
 
-      return products.length > 0 ? products : [];
+      return products.length > 0 ? products : mockProducts;
     } catch {
       await sleep(800);
       return [];

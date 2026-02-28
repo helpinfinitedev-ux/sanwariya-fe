@@ -25,6 +25,7 @@ axios.interceptors.request.use(
 );
 axios.interceptors.response.use(
   (res) => {
+    console.log({ res });
     const { config } = res;
     const { url, method } = config;
     const { result, message } = res.data;
@@ -37,6 +38,7 @@ axios.interceptors.response.use(
   },
   (err) => {
     const { config, message: msg, response } = err;
+    console.log({ config });
     const message = response?.data?.message;
     const { url, method } = config;
 
