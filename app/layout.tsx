@@ -7,6 +7,9 @@ import { AppToaster } from "@/components/app-toaster";
 export const metadata: Metadata = {
   title: "Sanwariya - Legacy of Exquisite Taste",
   description: "Premium Indian sweets crafted with centuries of tradition",
+  icons: {
+    icon: [{ url: "/logo2.png", href: "/logo2.png" }],
+  },
 };
 
 export default function RootLayout({
