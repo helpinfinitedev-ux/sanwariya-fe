@@ -32,10 +32,10 @@ const Header = () => {
   ];
 
   return (
-    <header className="w-full h-auto bg-transparent">
+    <header className="w-full h-auto bg-transparent pt-8">
       <div className="max-w-[1440px] h-full mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="py-2 pt-4">
+        <Link href="/" className="">
           <Image src="/logo2.png" alt="logo" width={200} height={120} className="object-cover w-[130px] sm:w-[160px] lg:w-[200px]" />
         </Link>
 
