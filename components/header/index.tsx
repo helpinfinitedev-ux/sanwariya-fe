@@ -32,7 +32,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="w-full h-auto bg-transparent pt-8">
+    <header className="w-full h-auto bg-transparent py-8">
       <div className="max-w-[1440px] h-full mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="">
